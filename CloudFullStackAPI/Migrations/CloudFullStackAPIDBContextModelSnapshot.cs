@@ -38,6 +38,7 @@ namespace CloudFullStackAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("HourlyRate")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsActive")
@@ -90,6 +91,7 @@ namespace CloudFullStackAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalCost")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("VehicleId")
@@ -187,6 +189,9 @@ namespace CloudFullStackAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsElectric")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Make")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -195,9 +200,6 @@ namespace CloudFullStackAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<bool>("isElectric")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

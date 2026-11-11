@@ -14,5 +14,7 @@ public class CloudFullStackAPIDBContext(DbContextOptions<CloudFullStackAPIDBCont
     {
         modelBuilder.Entity<ParkingLot>().Property(l => l.Latitude).HasPrecision(9, 6);
         modelBuilder.Entity<ParkingLot>().Property(l => l.Longitude).HasPrecision(9, 6);
+        modelBuilder.Entity<Bay>().Property(b => b.HourlyRate).HasPrecision(18, 2);
+        modelBuilder.Entity<Booking>().Property(b => b.TotalCost).HasPrecision(18, 2);
     }
 }

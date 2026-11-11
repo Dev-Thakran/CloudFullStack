@@ -30,8 +30,7 @@ builder.Services.AddTransient<ApiTokenHandler>();
 builder.Services.AddHttpClient("SpotSafeApi", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"] ?? "https://localhost:7002/");
-})
-    .AddHttpMessageHandler<ApiTokenHandler>();
+}).AddHttpMessageHandler<ApiTokenHandler>();
 
 builder.Services.AddHttpClient("OpenMeteo", client =>
 {
