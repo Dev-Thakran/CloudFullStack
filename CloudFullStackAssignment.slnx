@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="CloudFullStackAF/CloudFullStackAF.csproj" />
+  <Project Path="CloudFullStackAPI/CloudFullStackAPI.csproj" />
+  <Project Path="CloudFullStackMVC/CloudFullStackMVC.csproj" Id="b5038c85-a3fc-4451-b47c-c9e07bfe7523" />
+</Solution>

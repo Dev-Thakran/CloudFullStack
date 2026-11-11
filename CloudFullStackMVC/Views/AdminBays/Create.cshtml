@@ -1,0 +1,24 @@
+﻿@model CloudFullStackMVC.Models.Bay
+@{
+    ViewData["Title"] = "Add bay";
+}
+
+<h1>Add bay</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6 col-lg-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <partial name="_BayFields" model="Model" />
+            <button type="submit" class="btn btn-primary">Add bay</button>
+        </form>
+    </div>
+</div>
+
+<a asp-controller="AdminLots" asp-action="Details" asp-route-id="@Model.ParkingLotId" class="d-inline-block mt-3">Back to lot</a>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

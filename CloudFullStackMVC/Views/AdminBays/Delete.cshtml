@@ -1,0 +1,28 @@
+﻿@model CloudFullStackMVC.Models.Bay
+@{
+    ViewData["Title"] = "Delete bay";
+}
+
+<h1>Delete bay @Model.BayCode</h1>
+
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    Deleting this bay also deletes all of its bookings. To take it out of use temporarily,
+    <a asp-action="Edit" asp-route-id="@Model.Id">edit it</a> and untick <strong>Active</strong> instead.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Type</dt>
+    <dd class="col-sm-9">@Model.Type</dd>
+    <dt class="col-sm-3">Charger</dt>
+    <dd class="col-sm-9">@Model.ChargerSpeed</dd>
+    <dt class="col-sm-3">Hourly rate</dt>
+    <dd class="col-sm-9">$@Model.HourlyRate.ToString("0.00")</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" name="parkingLotId" value="@Model.ParkingLotId" />
+    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
+    <a asp-controller="AdminLots" asp-action="Details" asp-route-id="@Model.ParkingLotId" class="btn btn-link">Cancel</a>
+</form>

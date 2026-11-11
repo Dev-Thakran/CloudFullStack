@@ -1,0 +1,142 @@
+﻿@model CloudFullStackMVC.Models.ViewModels.LotDetailsViewModel
+@{
+    ViewData["Title"] = Model.Lot.Name;
+}
+
+<h1>@Model.Lot.Name</h1>
+<p class="text-muted">@Model.Lot.Address</p>
+<p>@Model.Lot.Description</p>
+
+<div class="card mb-4" style="max-width: 22rem;">
+    <div class="card-body">
+        <h5 class="card-title">Current weather</h5>
+        @if (Model.Weather != null)
+        {
+            <p class="mb-1 fs-4">@Model.Weather.Temperature.ToString("0.0") °C, @Model.Weather.Description</p>
+            <p class="mb-0 text-muted">
+                Wind @Model.Weather.WindSpeed.ToString("0") km/h · Rain @Model.Weather.Precipitation mm
+            </p>
+        }
+        else
+        {
+            <p class="mb-0 text-muted">Weather unavailable right now.</p>
+        }
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["NeedsPassword"] != null)
+{
+    <partial name="_SetPasswordAlert" />
+}
+
+<a asp-action="Availability" asp-route-lotId="@Model.Lot.Id" class="btn btn-outline-primary mb-3">Check availability</a>
+
+<h3 class="mt-4">Bays</h3>
+
+@if (!Model.Lot.Bays.Any())
+{
+    <p>No bays at this lot yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Bay</th>
+                    <th>Type</th>
+                    <th>Charger</th>
+                    <th>Rate / hr</th>
+                    <th>Book</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var bay in Model.Lot.Bays)
+                {
+                    <tr>
+                        <td>@bay.BayCode</td>
+                        <td>@bay.Type</td>
+                        <td>@bay.ChargerSpeed</td>
+                        <td>$@bay.HourlyRate.ToString("0.00")</td>
+                        <td>
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <form asp-action="Book" method="post" class="booking-form d-flex gap-2 align-items-center">
+                                    <input type="hidden" name="BayId" value="@bay.Id" />
+                                    <input type="hidden" name="LotId" value="@Model.Lot.Id" />
+                                    <input type="datetime-local" name="Start" class="form-control form-control-sm" required />
+                                    <input type="datetime-local" name="End" class="form-control form-control-sm" required />
+                                    <button type="submit" class="btn btn-primary btn-sm">Book</button>
+                                    <span class="quote small text-nowrap"></span>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-area="Identity" asp-page="/Account/Login">Log in to book</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<a asp-action="Index">Back to lots</a>
+
+@section Scripts {
+    <script>
+        $(function () {
+            // Whenever a start or end time changes in any booking form...
+            $('.booking-form').on('change', 'input[type=datetime-local]', function () {
+                var form = $(this).closest('form');
+                var start = form.find('input[name=Start]').val();
+                var end = form.find('input[name=End]').val();
+                var output = form.find('.quote');
+
+                // Wait until both times are picked
+                if (!start || !end) {
+                    output.text('');
+                    return;
+                }
+
+                // Work out the hours in the browser
+                var hours = (new Date(end) - new Date(start)) / (1000 * 60 * 60);
+                if (hours <= 0) {
+                    output.text('End must be after start').attr('class', 'quote small text-danger');
+                    return;
+                }
+
+                output.text('Calculating…').attr('class', 'quote small text-muted');
+
+                // AJAX call to MVC, which calls the Azure Function
+                $.ajax({
+                    url: '@Url.Action("Quote", "Lots")',
+                    method: 'GET',
+                    data: {
+                        bayId: form.find('input[name=BayId]').val(),
+                        hours: hours.toFixed(2)
+                    }
+                })
+                    .done(function (quote) {
+                        // Success: show the price
+                        output.text('$' + quote.totalCost.toFixed(2) + ' for ' + quote.hours + ' h')
+                            .attr('class', 'quote small text-success fw-semibold');
+                    })
+                    .fail(function (xhr) {
+                        // Error: show a friendly message
+                        var message = xhr.responseText || 'Could not get a price right now.';
+                        output.text(message).attr('class', 'quote small text-danger');
+                    });
+            });
+        });
+    </script>
+}

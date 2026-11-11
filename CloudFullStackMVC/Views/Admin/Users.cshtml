@@ -1,0 +1,65 @@
+﻿@model List<CloudFullStackMVC.Models.ViewModels.UserRolesViewModel>
+@{
+    ViewData["Title"] = "Manage users";
+}
+
+<h1>Manage users</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>EV</th>
+                <th>Accessibility needs</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@u.FullName</td>
+                    <td>@u.Email</td>
+                    <td>
+                        @foreach (var role in u.Roles)
+                        {
+                            <span class="badge @(role == "Admin" ? "bg-warning text-dark" : "bg-secondary")">@role</span>
+                        }
+                    </td>
+                    <td>@(u.DrivesElectricVehicle ? "Yes" : "No")</td>
+                    <td>@u.AccessibilityNeeds</td>
+                    <td>
+                        @if (u.IsAdmin)
+                        {
+                            <form asp-action="RemoveAdmin" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove Admin</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="MakeAdmin" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn btn-outline-primary btn-sm">Make Admin</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<a asp-action="Dashboard">Back to dashboard</a>

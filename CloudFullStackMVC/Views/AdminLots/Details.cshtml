@@ -1,0 +1,73 @@
+@model CloudFullStackMVC.Models.ParkingLot
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1>@Model.Name</h1>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Address)</dt>
+    <dd class="col-sm-9">@Html.DisplayFor(model => model.Address)</dd>
+
+    <dt class="col-sm-3">Location</dt>
+    <dd class="col-sm-9">@Model.Latitude, @Model.Longitude</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+    <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IsApproved)</dt>
+    <dd class="col-sm-9">@Html.DisplayFor(model => model.IsApproved)</dd>
+</dl>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+    <h3 class="mb-0">Bays</h3>
+    <a asp-controller="AdminBays" asp-action="Create" asp-route-lotId="@Model.Id" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> Add bay
+    </a>
+</div>
+
+@if (!Model.Bays.Any())
+{
+    <p class="text-muted">No bays yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr><th>Bay</th><th>Type</th><th>Charger</th><th>Rate / hr</th><th>Active</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var bay in Model.Bays)
+                {
+                    <tr>
+                        <td>@bay.BayCode</td>
+                        <td>@bay.Type</td>
+                        <td>@bay.ChargerSpeed</td>
+                        <td>$@bay.HourlyRate.ToString("0.00")</td>
+                        <td>@(bay.IsActive ? "Yes" : "No")</td>
+                        <td class="text-nowrap">
+                            <a asp-controller="AdminBays" asp-action="Edit" asp-route-id="@bay.Id">Edit</a> |
+                            <a asp-controller="AdminBays" asp-action="Delete" asp-route-id="@bay.Id" class="text-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to list</a>
+</div>

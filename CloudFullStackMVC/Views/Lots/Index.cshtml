@@ -1,0 +1,65 @@
+﻿@model List<CloudFullStackMVC.Models.ParkingLot>
+@{
+    ViewData["Title"] = "Find a bay";
+    string? sort = ViewBag.SortOrder as string;
+    string? search = ViewBag.Search as string;
+}
+
+<h1>Parking lots</h1>
+
+<form asp-action="Index" method="get" class="row g-2 mb-3">
+    <div class="col-sm-6 col-md-4">
+        <input type="text" name="search" value="@search" class="form-control" placeholder="Search by name or address" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Search</button>
+        @if (!string.IsNullOrEmpty(search))
+        {
+            <a asp-action="Index" class="btn btn-link">Clear</a>
+        }
+    </div>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@if (!Model.Any())
+{
+    <p>No parking lots match "@search".</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <a asp-action="Index" asp-route-search="@search"
+                           asp-route-sortOrder="@(sort == null ? "name_desc" : null)">
+                            Name @(sort == null ? "▲" : sort == "name_desc" ? "▼" : "")
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-search="@search"
+                           asp-route-sortOrder="@(sort == "address" ? "address_desc" : "address")">
+                            Address @(sort == "address" ? "▲" : sort == "address_desc" ? "▼" : "")
+                        </a>
+                    </th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var lot in Model)
+                {
+                    <tr>
+                        <td><a asp-action="Details" asp-route-id="@lot.Id">@lot.Name</a></td>
+                        <td>@lot.Address</td>
+                        <td>@lot.Description</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

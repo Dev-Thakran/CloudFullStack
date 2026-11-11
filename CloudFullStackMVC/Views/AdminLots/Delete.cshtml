@@ -1,0 +1,34 @@
+@model CloudFullStackMVC.Models.ParkingLot
+
+@{
+    ViewData["Title"] = "Delete parking lot";
+}
+
+<h1>Delete parking lot</h1>
+
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    Are you sure? Deleting this lot also deletes its
+    <strong>@Model.Bays.Count bay(s)</strong> and all of their bookings and reviews.
+    This can't be undone.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+    <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Address)</dt>
+    <dd class="col-sm-9">@Html.DisplayFor(model => model.Address)</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+    <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.IsApproved)</dt>
+    <dd class="col-sm-9">@Html.DisplayFor(model => model.IsApproved)</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
+    <a asp-action="Index" class="btn btn-link">Cancel</a>
+</form>

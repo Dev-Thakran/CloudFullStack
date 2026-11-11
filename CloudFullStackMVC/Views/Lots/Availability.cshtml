@@ -1,0 +1,75 @@
+﻿@model CloudFullStackMVC.Models.ViewModels.AvailabilityViewModel
+@{
+    ViewData["Title"] = "Check availability";
+}
+
+<h1>Check availability</h1>
+
+<form asp-action="Availability" method="get" class="row g-2 align-items-end mb-4">
+    <input type="hidden" name="lotId" value="@Model.LotId" />
+    <div class="col-auto">
+        <label class="form-label">Start</label>
+        <input type="datetime-local" name="start" value="@Model.Start?.ToString("yyyy-MM-ddTHH:mm")" class="form-control" required />
+    </div>
+    <div class="col-auto">
+        <label class="form-label">End</label>
+        <input type="datetime-local" name="end" value="@Model.End?.ToString("yyyy-MM-ddTHH:mm")" class="form-control" required />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else if (Model.Searched && !Model.AvailableBays.Any())
+{
+    <div class="alert alert-warning">No bays are free for that time. Try a different time.</div>
+}
+else if (Model.Searched)
+{
+    <p>@Model.AvailableBays.Count bay(s) free from @Model.Start?.ToString("ddd d MMM, h:mm tt") to @Model.End?.ToString("ddd d MMMMM, h:mm tt"):</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Bay</th>
+                <th>Type</th>
+                <th>Charger</th>
+                <th>Rate / hr</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bay in Model.AvailableBays)
+            {
+                <tr>
+                    <td>@bay.BayCode</td>
+                    <td>@bay.Type</td>
+                    <td>@bay.ChargerSpeed</td>
+                    <td>$@bay.HourlyRate.ToString("0.00")</td>
+                    <td>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <form asp-action="Book" method="post">
+                                <input type="hidden" name="BayId" value="@bay.Id" />
+                                <input type="hidden" name="LotId" value="@Model.LotId" />
+                                <input type="hidden" name="Start" value="@Model.Start?.ToString("yyyy-MM-ddTHH:mm")" />
+                                <input type="hidden" name="End" value="@Model.End?.ToString("yyyy-MM-ddTHH:mm")" />
+                                <button type="submit" class="btn btn-success btn-sm">Book this bay</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-area="Identity" asp-page="/Account/Login">Log in to book</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Details" asp-route-id="@Model.LotId">Back to lot</a>
